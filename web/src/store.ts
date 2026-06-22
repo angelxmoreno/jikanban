@@ -10,10 +10,13 @@ import {
     milestones as seedMilestones,
     transitions as seedTransitions,
     users as seedUsers,
+    workspaces as seedWorkspaces,
 } from './dummy';
-import type { Board, Card, CardMilestone, CardTransition, Column, Priority, User } from './types';
+import type { Board, Card, CardMilestone, CardTransition, Column, Priority, User, Workspace } from './types';
 
 export interface State {
+    currentUserId: string;
+    workspaces: Workspace[];
     users: User[];
     boards: Board[];
     columns: Column[];
@@ -23,6 +26,8 @@ export interface State {
 }
 
 export const initialState: State = {
+    currentUserId,
+    workspaces: seedWorkspaces,
     users: seedUsers,
     boards: seedBoards,
     columns: seedColumns,
@@ -38,7 +43,6 @@ export interface NewCard {
     priority: Priority;
     dueDate: string;
     assignedTo?: string;
-    assignedBy?: string;
     milestones: { columnId: string; targetDate: string }[];
 }
 
@@ -49,14 +53,14 @@ export interface EditCard {
     priority: Priority;
     dueDate: string;
     assignedTo?: string;
-    assignedBy?: string;
     milestones: { columnId: string; targetDate: string }[];
 }
 
 export type Action =
     | { type: 'move'; cardId: string; toColumnId: string }
     | { type: 'addCard'; payload: NewCard }
-    | { type: 'updateCard'; payload: EditCard };
+    | { type: 'updateCard'; payload: EditCard }
+    | { type: 'updateWorkspace'; workspaceId: string; settings: Partial<Workspace['settings']>; name?: string };
 
 const uid = (): string => crypto.randomUUID();
 
@@ -92,7 +96,7 @@ export const reducer = (state: State, action: Action): State => {
                         card_id: action.cardId,
                         from_column_id: fromCol?.is_backlog ? undefined : card.column_id,
                         to_column_id: action.toColumnId,
-                        transitioned_by: currentUserId,
+                        transitioned_by: state.currentUserId,
                         transitioned_at: isoNow(),
                     },
                 ],
@@ -112,8 +116,8 @@ export const reducer = (state: State, action: Action): State => {
                 description: payload.description,
                 priority: payload.priority,
                 due_date: payload.dueDate,
-                created_by: currentUserId,
-                assigned_by: payload.assignedBy,
+                created_by: state.currentUserId,
+                assigned_by: payload.assignedTo ? state.currentUserId : undefined,
                 assigned_to: payload.assignedTo,
                 created_at: now,
                 updated_at: now,
@@ -130,20 +134,20 @@ export const reducer = (state: State, action: Action): State => {
         case 'updateCard': {
             const { payload } = action;
             const now = isoNow();
-            const cards = state.cards.map((c) =>
-                c.id === payload.cardId
-                    ? {
-                          ...c,
-                          title: payload.title,
-                          description: payload.description,
-                          priority: payload.priority,
-                          due_date: payload.dueDate,
-                          assigned_by: payload.assignedBy,
-                          assigned_to: payload.assignedTo,
-                          updated_at: now,
-                      }
-                    : c
-            );
+            const cards = state.cards.map((c) => {
+                if (c.id !== payload.cardId) return c;
+                const assignedToChanged = payload.assignedTo !== c.assigned_to;
+                return {
+                    ...c,
+                    title: payload.title,
+                    description: payload.description,
+                    priority: payload.priority,
+                    due_date: payload.dueDate,
+                    assigned_by: assignedToChanged && payload.assignedTo ? state.currentUserId : c.assigned_by,
+                    assigned_to: payload.assignedTo,
+                    updated_at: now,
+                };
+            });
             const milestones = state.milestones.filter((m) => m.card_id !== payload.cardId);
             const rebuilt = payload.milestones.map((m) => ({
                 id: uid(),
@@ -154,12 +158,35 @@ export const reducer = (state: State, action: Action): State => {
             }));
             return { ...state, cards, milestones: [...milestones, ...rebuilt] };
         }
+        case 'updateWorkspace': {
+            const { workspaceId, settings, name } = action;
+            const now = isoNow();
+            return {
+                ...state,
+                workspaces: state.workspaces.map((w) =>
+                    w.id === workspaceId
+                        ? {
+                              ...w,
+                              name: name ?? w.name,
+                              settings: { ...w.settings, ...settings },
+                              updated_at: now,
+                          }
+                        : w
+                ),
+            };
+        }
         default:
             return state;
     }
 };
 
 // Selectors
+export const workspaceById = (state: State, workspaceId: string): Workspace | undefined =>
+    state.workspaces.find((w) => w.id === workspaceId);
+
+export const boardsForWorkspace = (state: State, workspaceId: string): Board[] =>
+    state.boards.filter((b) => b.workspace_id === workspaceId);
+
 export const columnsForBoard = (state: State, boardId: string): Column[] =>
     state.columns.filter((c) => c.board_id === boardId).sort((a, b) => a.position - b.position);
 

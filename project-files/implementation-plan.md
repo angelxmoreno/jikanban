@@ -195,4 +195,5 @@
 
 - Docker is deferred to Phase 10 (production), not used during development. See `decisions-log.md` DECISION-017.
 - The dummy-data module in Phase 1 is the single source of truth for the API response shape until Phase 6 wires it away. Keep it aligned with `schema.md`.
+- Phase 1 was corrected after initial completion to add the `workspaces` layer and per-workspace settings, and to make `assigned_by` backend-set (see DECISION-018 and DECISION-019).
 - Per-directory `package.json` (no workspaces) is the dependency model — see DECISION-015.

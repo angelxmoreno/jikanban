@@ -8,6 +8,33 @@ MVP uses SQLite via Drizzle ORM. All tables use `text` primary keys (nanoid/cuid
 
 ## Tables
 
+### workspaces
+
+Top-level grouping. A workspace represents a project or organizational boundary. Boards, settings, and AI configuration live inside a workspace.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | text | Primary key |
+| name | text | e.g. "Jikanban" |
+| slug | text | URL-friendly identifier |
+| created_by | text | FK → users.id |
+| settings | text | JSON blob — see **Workspace settings** below |
+| created_at | text | ISO 8601 |
+| updated_at | text | ISO 8601 |
+
+**Workspace settings** (stored as JSON on `settings`):
+
+| Field | Type | Notes |
+|---|---|---|
+| ollama_base_url | string | OpenAI-compatible endpoint for this workspace |
+| ollama_model | string | e.g. "qwen3:8b" |
+| open_notebook_base_url | string | Open Notebook instance URL |
+| open_notebook_notebook | string | Notebook ID/name to sync into |
+
+Settings are workspace-scoped so different projects can point at different models or notebooks.
+
+---
+
 ### users
 
 Manually seeded in MVP. No auth layer yet.
@@ -23,11 +50,12 @@ Manually seeded in MVP. No auth layer yet.
 
 ### boards
 
-Each board represents a type of work (e.g. Development, Blog Post).
+Each board represents a type of work (e.g. Development, Blog Post). Boards live inside a workspace.
 
 | Column | Type | Notes |
 |---|---|---|
 | id | text | Primary key |
+| workspace_id | text | FK → workspaces.id |
 | name | text | e.g. "Development" |
 | description | text | Optional |
 | created_by | text | FK → users.id |
@@ -113,9 +141,13 @@ Immutable log of every column change a card goes through. Never updated or delet
 
 ```
 users
+  └── workspaces (created_by)
   └── boards (created_by)
   └── cards (created_by, assigned_by, assigned_to)
   └── card_transitions (transitioned_by)
+
+workspaces
+  └── boards (workspace_id)
 
 boards
   └── columns (board_id)

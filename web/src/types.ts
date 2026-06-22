@@ -12,6 +12,23 @@
 
 export type Priority = 'low' | 'medium' | 'high';
 
+export interface WorkspaceSettings {
+    ollama_base_url?: string;
+    ollama_model?: string;
+    open_notebook_base_url?: string;
+    open_notebook_notebook?: string;
+}
+
+export interface Workspace {
+    id: string;
+    name: string;
+    slug: string;
+    created_by: string;
+    settings: WorkspaceSettings;
+    created_at: string;
+    updated_at: string;
+}
+
 export interface User {
     id: string;
     name: string;
@@ -21,6 +38,7 @@ export interface User {
 
 export interface Board {
     id: string;
+    workspace_id: string;
     name: string;
     description?: string;
     created_by: string;

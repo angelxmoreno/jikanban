@@ -1,7 +1,7 @@
 // Dummy data — the de-facto API contract. Mirrors project-files/schema.md
 // field-for-field. Dates are relative to today so overdue/missed states are
 // deterministic regardless of when the app runs.
-import type { Board, Card, CardMilestone, CardTransition, Column, User } from './types';
+import type { Board, Card, CardMilestone, CardTransition, Column, User, Workspace } from './types';
 
 const ts = (offsetDays: number): string => {
     const d = new Date();
@@ -17,6 +17,23 @@ const day = (offset: number): string => {
 
 export const currentUserId = 'u-angel';
 
+export const workspaces: Workspace[] = [
+    {
+        id: 'w-default',
+        name: 'Jikanban',
+        slug: 'jikanban',
+        created_by: 'u-angel',
+        settings: {
+            ollama_base_url: 'http://192.168.86.35:11434/v1',
+            ollama_model: 'qwen3:8b',
+            open_notebook_base_url: 'http://192.168.86.32:3000',
+            open_notebook_notebook: 'jikanban',
+        },
+        created_at: ts(-90),
+        updated_at: ts(-2),
+    },
+];
+
 export const users: User[] = [
     { id: 'u-angel', name: 'Angel S. Moreno', email: 'angel@jikanban.dev', created_at: ts(-90) },
     { id: 'u-maya', name: 'Maya Chen', email: 'maya@jikanban.dev', created_at: ts(-90) },
@@ -25,6 +42,7 @@ export const users: User[] = [
 export const boards: Board[] = [
     {
         id: 'b-dev',
+        workspace_id: 'w-default',
         name: 'Development',
         description: 'Backend + frontend engineering',
         created_by: 'u-angel',
@@ -33,6 +51,7 @@ export const boards: Board[] = [
     },
     {
         id: 'b-blog',
+        workspace_id: 'w-default',
         name: 'Blog Post',
         description: 'Content pipeline',
         created_by: 'u-angel',
@@ -41,6 +60,7 @@ export const boards: Board[] = [
     },
     {
         id: 'b-email',
+        workspace_id: 'w-default',
         name: 'Customer Email',
         description: 'Inbound customer comms',
         created_by: 'u-angel',

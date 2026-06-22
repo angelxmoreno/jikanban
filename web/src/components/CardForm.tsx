@@ -4,6 +4,15 @@ import { today } from '../dates';
 import type { EditCard, NewCard, State } from '../store';
 import type { Card, Priority } from '../types';
 
+const initials = (name: string): string =>
+    name
+        .split(' ')
+        .map((p) => p[0])
+        .filter(Boolean)
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+
 interface Props {
     open: boolean;
     mode: 'new' | 'edit';
@@ -54,7 +63,6 @@ export function CardForm({ open, mode, state, boardId, card, onClose, onSubmit }
     const [priority, setPriority] = useState<Priority>(card?.priority ?? 'medium');
     const [dueDate, setDueDate] = useState(card?.due_date ?? today());
     const [assignedTo, setAssignedTo] = useState(card?.assigned_to ?? '');
-    const [assignedBy, setAssignedBy] = useState(card?.assigned_by ?? '');
     const [milestones, setMilestones] = useState<MForm[]>(
         middleCols.map((c) => ({
             columnId: c.id,
@@ -77,7 +85,6 @@ export function CardForm({ open, mode, state, boardId, card, onClose, onSubmit }
                 priority,
                 dueDate,
                 assignedTo: assignedTo || undefined,
-                assignedBy: assignedBy || undefined,
                 milestones: ms,
             } satisfies EditCard);
         } else {
@@ -88,7 +95,6 @@ export function CardForm({ open, mode, state, boardId, card, onClose, onSubmit }
                 priority,
                 dueDate,
                 assignedTo: assignedTo || undefined,
-                assignedBy: assignedBy || undefined,
                 milestones: ms,
             } satisfies NewCard);
         }
@@ -145,17 +151,17 @@ export function CardForm({ open, mode, state, boardId, card, onClose, onSubmit }
                                 ))}
                             </select>
                         </div>
-                        <div className="field">
-                            <label htmlFor="f-assignby">Assigned by</label>
-                            <select id="f-assignby" value={assignedBy} onChange={(e) => setAssignedBy(e.target.value)}>
-                                <option value="">—</option>
-                                {state.users.map((u) => (
-                                    <option key={u.id} value={u.id}>
-                                        {u.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        {card?.assigned_by && (
+                            <div className="field readonly-field">
+                                <span className="field-label">Assigned by</span>
+                                <span className="readonly-value">
+                                    <span className="avatar">
+                                        {initials(state.users.find((u) => u.id === card.assigned_by)?.name ?? '')}
+                                    </span>
+                                    {state.users.find((u) => u.id === card.assigned_by)?.name ?? 'Unknown'}
+                                </span>
+                            </div>
+                        )}
                     </div>
                     {middleCols.length > 0 && (
                         <div className="field">

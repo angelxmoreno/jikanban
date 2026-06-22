@@ -3,7 +3,7 @@
    Signature: freshness rails (green→amber→red) — the "don't go stale" thesis. */
 
 :root {
-    color-scheme: light;
+    color-scheme: light dark;
     --paper: #ecedee;
     --grid: #dadfe3;
     --ink: #1b1e22;
@@ -18,6 +18,22 @@
     --accent-soft: #e6eaf5;
     --sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #141619;
+    --grid: #1e2227;
+    --ink: #e8eaed;
+    --ink-2: #a4abb6;
+    --ink-3: #6e7887;
+    --line: #2c323a;
+    --card-bg: #1a1e22;
+    --fresh: #4caf7f;
+    --soon: #e6a845;
+    --stale: #e57373;
+    --accent: #6a7fd0;
+    --accent-soft: #20263a;
 }
 
 * {
@@ -48,6 +64,9 @@ body {
     border-right: 1px solid var(--line);
     background: var(--paper);
     padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .brand {
@@ -67,6 +86,63 @@ body {
     color: var(--ink-3);
     margin: 0 0 22px;
     line-height: 1.4;
+}
+
+.workspace-select {
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 7px 9px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--card-bg);
+    color: var(--ink);
+    margin-bottom: 6px;
+}
+
+.workspace-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.settings-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    padding: 4px 2px 14px;
+    cursor: pointer;
+}
+
+.settings-link:hover {
+    text-decoration: underline;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 18px;
+}
+
+.theme-toggle {
+    width: 100%;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-3);
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 6px 8px;
+    cursor: pointer;
+}
+
+.theme-toggle:hover {
+    color: var(--ink);
+    border-color: var(--ink-3);
 }
 
 .nav-label {
@@ -257,7 +333,7 @@ body {
 
 .card:hover {
     border-color: var(--ink-3);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--ink) 10%, transparent);
 }
 
 .card.dragging {
@@ -367,6 +443,41 @@ body {
     flex-direction: column;
     gap: 14px;
     padding: 4px 2px;
+}
+
+.section-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 4px;
+    margin-top: 4px;
+}
+
+.readonly-field .readonly-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-2);
+    padding: 7px 0;
+}
+
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
 }
 
 .field label,

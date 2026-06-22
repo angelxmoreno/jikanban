@@ -187,3 +187,23 @@ A living document. Every significant architectural, technical, or product decisi
 **Rationale:** The project is now frontend-first with dummy data (Path A in the implementation plan). The dev loop is Vite HMR + a Bun backend — Dockerizing either adds container-rebuild friction to every change with no benefit until production. Production fidelity via Dokploy matters only once the workflow is validated locally (DECISION-012). Docker-first was overhead without payoff for a single local user iterating on UX.
 **Alternatives considered:** Docker-first from day one (DECISION-004, now superseded).
 **Trade-offs:** Dev and prod environments differ — the "works on my machine" risk shifts to Phase 10. Mitigated by containerizing the same code at migration time and smoke-testing all routes there. Local dev is also one machine (Silica/dokbuntu), so drift is bounded.
+
+---
+
+### [DECISION-018] Workspaces as top-level grouping
+**Date:** 2026-06-22
+**Status:** Decided
+**Decision:** Introduce a `workspaces` table as the top-level grouping above boards. Add `boards.workspace_id` as a foreign key. Store per-workspace AI configuration (Ollama base URL/model, Open Notebook base URL/notebook) as a JSON `settings` column on `workspaces`.
+**Rationale:** Boards naturally belong to a project or workspace. AI assistant settings and Open Notebook sync targets are project-specific — a Development workspace may use a different model or notebook than a Content workspace. A top-level workspace entity lets the UI switch contexts and keeps settings scoped.
+**Alternatives considered:** Boards directly under users with per-board settings. Rejected — it fragments settings and makes cross-board views (Todos, Calendar) ambiguous about which AI config applies.
+**Trade-offs:** Workspace settings as JSON are not individually validated at the database level. Phase 5 backend validation will enforce shape. If settings grow complex, the JSON column can be split into a dedicated table later.
+
+---
+
+### [DECISION-019] assigned_by is backend-set, not user-editable
+**Date:** 2026-06-22
+**Status:** Decided
+**Decision:** `cards.assigned_by` is set automatically by the backend to the current user whenever `assigned_to` is set or changed. The frontend card form does not expose an `assigned_by` control.
+**Rationale:** `assigned_by` is an audit field representing "who performed the assignment action," not a freeform role. Exposing it as a dropdown invites inconsistent data and violates the three-role semantics in DECISION-007. With no auth in MVP (DECISION-011), the backend uses the hardcoded current user.
+**Alternatives considered:** Keeping `assigned_by` editable for flexibility. Rejected — it breaks the audit semantics and the form should reflect real workflow actions.
+**Trade-offs:** Edge cases where one user creates a card on behalf of another are no longer representable in the MVP form. The raw database still stores the field, so an admin seed or future API can set it explicitly if needed.
