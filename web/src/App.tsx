@@ -5,7 +5,15 @@ import { boardsForWorkspace, initialState, reducer, workspaceById } from './stor
 
 type Theme = 'light' | 'dark';
 
+function urlTheme(): Theme | null {
+    if (typeof window === 'undefined') return null;
+    const param = new URLSearchParams(window.location.search).get('theme');
+    return param === 'light' || param === 'dark' ? param : null;
+}
+
 function persistedTheme(): Theme {
+    const fromUrl = urlTheme();
+    if (fromUrl) return fromUrl;
     try {
         const stored = localStorage.getItem('jkb-theme') as Theme | null;
         if (stored === 'light' || stored === 'dark') return stored;

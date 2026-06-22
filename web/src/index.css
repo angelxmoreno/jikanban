@@ -4,18 +4,18 @@
 
 :root {
     color-scheme: light dark;
-    --paper: #ecedee;
-    --grid: #dadfe3;
-    --ink: #1b1e22;
-    --ink-2: #5c636b;
-    --ink-3: #8a9099;
-    --line: #c7ccd1;
-    --card-bg: #f4f5f6;
-    --fresh: #2e7d5b;
-    --soon: #b5803a;
-    --stale: #b23a3a;
+    --paper: #d9dee3;
+    --grid: #c9d0d7;
+    --ink: #0f1114;
+    --ink-2: #3a4148;
+    --ink-3: #6a737c;
+    --line: #b4bdc4;
+    --card-bg: #ffffff;
+    --fresh: #256f50;
+    --soon: #9a6b2f;
+    --stale: #9c2e2e;
     --accent: #3d4e8c;
-    --accent-soft: #e6eaf5;
+    --accent-soft: #dbe2f4;
     --sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
 }
