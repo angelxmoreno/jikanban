@@ -5,7 +5,7 @@
     "private": true,
     "scripts": {
         "prepare": "lefthook install",
-        "lint": "turbo run lint",
+        "lint": "biome check .",
         "lint:fix": "biome check --write .",
         "check": "bun lint:fix && bun check:types && bun check:dead-code && bun check:dupes && bun check:health",
         "check:types": "tsc --noEmit",

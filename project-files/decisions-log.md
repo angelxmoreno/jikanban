@@ -52,7 +52,7 @@ A living document. Every significant architectural, technical, or product decisi
 
 ### [DECISION-004] Docker-first deployment
 **Date:** 2026-06-22
-**Status:** Decided
+**Status:** Superseded by DECISION-017
 **Decision:** Everything runs in Docker Compose from day one. No local bare-metal dev servers.
 **Rationale:** Mirrors the eventual production deployment on Oracle A1 via Dokploy. Avoids "works on my machine" issues. Easier to hand off or replicate.
 **Alternatives considered:** Running Bun and Vite directly on Silica during development.
@@ -177,3 +177,13 @@ A living document. Every significant architectural, technical, or product decisi
 **Rationale:** The "designed for MariaDB from the start" principle creates ongoing mental overhead on every schema decision without delivering value until (if) a migration ever happens. Drizzle abstracts the differences well enough that the migration — when needed — is mechanical: driver swap, connection string change, `integer` booleans become `tinyint(1)`. There is no schema logic that needs to be written differently today to make that migration easier tomorrow.
 **Alternatives considered:** Keeping MariaDB compatibility as an active design constraint (previous guiding principle in implementation plan).
 **Trade-offs:** If an unexpected MariaDB-incompatible pattern is introduced, it will need to be untangled at migration time rather than caught early. Acceptable given the low likelihood and low cost of that fix.
+
+---
+
+### [DECISION-017] Docker at production, not during dev
+**Date:** 2026-06-22
+**Status:** Decided
+**Decision:** Run the frontend and backend directly during development (no Docker). Docker enters only at the Oracle production migration (Phase 10), not at the start.
+**Rationale:** The project is now frontend-first with dummy data (Path A in the implementation plan). The dev loop is Vite HMR + a Bun backend — Dockerizing either adds container-rebuild friction to every change with no benefit until production. Production fidelity via Dokploy matters only once the workflow is validated locally (DECISION-012). Docker-first was overhead without payoff for a single local user iterating on UX.
+**Alternatives considered:** Docker-first from day one (DECISION-004, now superseded).
+**Trade-offs:** Dev and prod environments differ — the "works on my machine" risk shifts to Phase 10. Mitigated by containerizing the same code at migration time and smoke-testing all routes there. Local dev is also one machine (Silica/dokbuntu), so drift is bounded.
