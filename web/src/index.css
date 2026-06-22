@@ -1,8 +1,467 @@
+/* Jikanban — engineering-notebook design system.
+   Palette: cool graph-paper, ink text, indigo accent used sparingly.
+   Signature: freshness rails (green→amber→red) — the "don't go stale" thesis. */
+
 :root {
-    color-scheme: light dark;
+    color-scheme: light;
+    --paper: #ecedee;
+    --grid: #dadfe3;
+    --ink: #1b1e22;
+    --ink-2: #5c636b;
+    --ink-3: #8a9099;
+    --line: #c7ccd1;
+    --card-bg: #f4f5f6;
+    --fresh: #2e7d5b;
+    --soon: #b5803a;
+    --stale: #b23a3a;
+    --accent: #3d4e8c;
+    --accent-soft: #e6eaf5;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--paper);
+    -webkit-font-smoothing: antialiased;
+}
+
+.mono {
+    font-family: var(--mono);
+    font-feature-settings: "tnum" 1;
+}
+
+/* App shell */
+.app {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 100vh;
+}
+
+.sidebar {
+    border-right: 1px solid var(--line);
+    background: var(--paper);
+    padding: 20px 14px;
+}
+
+.brand {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.02em;
+    margin: 0 0 2px;
+}
+
+.brand .ji {
+    color: var(--accent);
+}
+
+.tagline {
+    font-size: 11px;
+    color: var(--ink-3);
+    margin: 0 0 22px;
+    line-height: 1.4;
+}
+
+.nav-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+    margin: 18px 0 8px;
+}
+
+.board-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.board-nav button {
+    border: none;
+    background: none;
+    text-align: left;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink-2);
+    padding: 7px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.board-nav button:hover {
+    background: var(--accent-soft);
+    color: var(--ink);
+}
+
+.board-nav button.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.board-nav .count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-3);
+}
+
+/* Board area */
+.main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.board-header {
+    padding: 22px 28px 14px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.board-header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.board-header .desc {
+    color: var(--ink-2);
+    font-size: 13px;
+    margin-left: 12px;
+}
+
+.add-btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    border: 1px solid var(--line);
+    background: var(--card-bg);
+    color: var(--ink);
+    padding: 7px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.add-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Graph-paper board surface */
+.board {
+    flex: 1;
+    display: flex;
+    gap: 14px;
+    padding: 20px 28px 28px;
+    overflow-x: auto;
+    background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 22px 22px;
+}
+
+.column {
+    flex: 0 0 264px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--paper) 70%, transparent);
+    transition: border-color 0.12s;
+}
+
+.column.drop {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.column-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+}
+
+.column-head .name {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.column-head .name.backlog {
+    color: var(--ink-2);
+    font-weight: 500;
+}
+
+.column-head .name.complete {
+    color: var(--fresh);
+}
+
+.column-head .count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-3);
+}
+
+.column-list {
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-height: 60px;
+}
+
+.column-empty {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    padding: 14px 4px;
+    text-align: center;
+}
+
+/* Card */
+.card {
+    display: block;
+    width: 100%;
+    font: inherit;
+    text-align: left;
+    color: inherit;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 10px 12px 0;
+    cursor: grab;
+    position: relative;
+    transition:
+        box-shadow 0.1s,
+        border-color 0.1s;
+}
+
+.card:hover {
+    border-color: var(--ink-3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.card.dragging {
+    opacity: 0.4;
+}
+
+.card-title {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    margin: 0 0 8px;
+    padding-right: 8px;
+}
+
+.card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-2);
+    padding-bottom: 9px;
+    flex-wrap: wrap;
+}
+
+.priority {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.priority.high {
+    background: var(--stale);
+}
+
+.priority.medium {
+    background: var(--soon);
+}
+
+.priority.low {
+    background: var(--ink-3);
+}
+
+.assignee {
+    margin-left: auto;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: 9px;
+    color: var(--ink-2);
+}
+
+/* Badges */
+.stamp {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-family: var(--mono);
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 2px 5px;
+    border-radius: 2px;
+    text-transform: uppercase;
+}
+
+.stamp.stale {
+    color: var(--stale);
+    border: 1px solid var(--stale);
+}
+
+.stamp.missed {
+    color: var(--soon);
+    border: 1px solid var(--soon);
+}
+
+/* Freshness rail — signature */
+.rail {
+    display: block;
+    height: 3px;
+    border-radius: 0 0 4px 4px;
+    margin: 0 -12px;
+}
+
+.rail.fresh {
+    background: var(--fresh);
+}
+
+.rail.soon {
+    background: var(--soon);
+}
+
+.rail.stale {
+    background: var(--stale);
+}
+
+.rail.done {
+    background: var(--line);
+}
+
+/* Form (Radix Dialog overrides) */
+.form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 4px 2px;
+}
+
+.field label,
+.field .field-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-3);
+    margin-bottom: 5px;
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 7px 9px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--card-bg);
+    color: var(--ink);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.field textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.milestone-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 8px;
+    align-items: end;
+}
+
+.error {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--stale);
+    margin-top: 4px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.btn {
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: var(--card-bg);
+    color: var(--ink);
+}
+
+.btn:hover {
+    border-color: var(--ink-3);
+}
+
+.btn.primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.btn.primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card,
+    .column {
+        transition: none;
+    }
 }

@@ -10,7 +10,7 @@ if (!rootElement) throw new Error('Root element #root not found');
 
 createRoot(rootElement).render(
     <StrictMode>
-        <Theme accentColor="iris" radius="medium" scaling="100%">
+        <Theme accentColor="indigo" grayColor="slate" radius="small" scaling="100%">
             <App />
         </Theme>
     </StrictMode>
