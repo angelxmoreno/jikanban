@@ -28,22 +28,22 @@
 
 **Goal:** Board view and card management working in the browser against in-memory dummy data.
 
-- [ ] Typed dummy-data module in `web/src/data/` mirroring `schema.md` field-for-field
+- [x] Typed dummy-data module in `web/src/data/` mirroring `schema.md` field-for-field
   - `users`, `boards`, `columns`, `cards`, `card_milestones`, `card_transitions`
   - Same field names, same types (text PKs as strings, ISO 8601 timestamps, `priority` enum)
   - 3 default boards (Development, Blog Post, Customer Email) with their columns
   - Enough sample cards to exercise overdue + missed-milestone states
-- [ ] App shell with sidebar navigation (list of boards)
-- [ ] Board view — columns rendered left to right, cards in each column
-- [ ] Drag and drop card movement between columns (updates in-memory state; writes to dummy `card_transitions`, stamps `work_started_at` / `completed_at`)
-- [ ] Card creation form
+- [x] App shell with sidebar navigation (list of boards)
+- [x] Board view — columns rendered left to right, cards in each column
+- [x] Drag and drop card movement between columns (updates in-memory state; writes to dummy `card_transitions`, stamps `work_started_at` / `completed_at`)
+- [x] Card creation form
   - Title, description, priority
   - Assigned to, assigned by
   - Due date picker
   - Milestone date pickers per middle column (optional, validated client-side against schema constraints)
-- [ ] Card detail / edit view
-- [ ] Visual indicator on card if overdue (due date passed, not Complete)
-- [ ] Visual indicator on card if a milestone is missed
+- [x] Card detail / edit view
+- [x] Visual indicator on card if overdue (due date passed, not Complete)
+- [x] Visual indicator on card if a milestone is missed
 
 **Note:** The dummy-data module is the de-facto API contract. Phase 5 Hono routes must return shapes matching it. Keep it in sync with `schema.md`.
 
@@ -193,6 +193,6 @@
 
 ## Notes
 
-- Docker is deferred to Phase 10 (production), not used during development. This revises the original "Docker-first from day one" principle — see `decisions-log.md` DECISION-004, which needs revisiting.
+- Docker is deferred to Phase 10 (production), not used during development. See `decisions-log.md` DECISION-017.
 - The dummy-data module in Phase 1 is the single source of truth for the API response shape until Phase 6 wires it away. Keep it aligned with `schema.md`.
 - Per-directory `package.json` (no workspaces) is the dependency model — see DECISION-015.
