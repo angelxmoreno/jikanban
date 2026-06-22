@@ -8,7 +8,7 @@
         "lint": "biome check .",
         "lint:fix": "biome check --write .",
         "check": "bun lint:fix && bun check:types && bun check:dead-code && bun check:dupes && bun check:health",
-        "check:types": "tsc --noEmit",
+        "check:types": "tsc --noEmit && tsc -b web/tsconfig.json",
         "check:dead-code": "bun run fallow dead-code",
         "check:dupes": "bun run fallow dupes",
         "check:health": "bun run fallow health",

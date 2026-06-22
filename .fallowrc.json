@@ -13,7 +13,11 @@
         //   "**/generated/**"     // OpenAPI, Protobuf codegen
         // ]
     },
-    "rules": {},
+    "rules": {
+        // No test framework yet — don't fail on coverage gaps.
+        // Re-enable (set to "error") when tests are wired up.
+        "coverage-gaps": "off"
+    },
     "health": {
         "ignore": ["index.ts"]
     }
