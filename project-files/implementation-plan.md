@@ -14,13 +14,13 @@
 
 **Goal:** Flat repo with `web/` scaffolded and running. No Docker, no backend yet.
 
-- [ ] `web/` directory with its own `package.json`
+- [x] `web/` directory with its own `package.json`
   - Vite + React + TypeScript
   - Radix UI + Radix Themes
-- [ ] `web/vite.config.ts`, `web/index.html`, `web/src/main.tsx`
-- [ ] `api/` directory placeholder (no code yet — created in Phase 4)
-- [ ] `web/` dev server runs: `cd web && bun install && bunx vite`
-- [ ] Root tooling stays as-is (Biome, lefthook, commitlint, fallow)
+- [x] `web/vite.config.ts`, `web/index.html`, `web/src/main.tsx`
+- [x] `api/` directory placeholder (no code yet — created in Phase 4)
+- [x] `web/` dev server runs: `cd web && bun install && bunx vite` (also `bun dev` from repo root)
+- [x] Root tooling stays as-is (Biome, lefthook, commitlint, fallow)
 
 ---
 

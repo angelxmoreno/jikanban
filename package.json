@@ -4,6 +4,7 @@
     "type": "module",
     "private": true,
     "scripts": {
+        "dev": "bun --cwd web dev",
         "prepare": "lefthook install",
         "lint": "biome check .",
         "lint:fix": "biome check --write .",
