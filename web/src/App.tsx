@@ -20,7 +20,7 @@ function persistedTheme(): Theme {
     } catch {
         // ignore
     }
-    return 'dark';
+    return 'light';
 }
 
 export default function App() {
