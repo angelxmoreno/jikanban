@@ -13,5 +13,8 @@
         //   "**/generated/**"     // OpenAPI, Protobuf codegen
         // ]
     },
-    "rules": {}
+    "rules": {},
+    "health": {
+        "ignore": ["index.ts"]
+    }
 }
