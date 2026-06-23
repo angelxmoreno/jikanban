@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useReducer, useState } from 'react';
 import { BoardView } from './components/BoardView';
+import { Login } from './components/Login';
 import { WorkspaceSettings } from './components/WorkspaceSettings';
 import { boardsForWorkspace, initialState, reducer, workspaceById } from './store';
 
@@ -23,21 +24,22 @@ function persistedTheme(): Theme {
     return 'light';
 }
 
-export default function App() {
-    const [state, dispatch] = useReducer(reducer, initialState);
+function MainApp({
+    state,
+    dispatch,
+    onLogout,
+    theme,
+    setTheme,
+}: {
+    state: ReturnType<typeof reducer>;
+    dispatch: React.Dispatch<Parameters<typeof reducer>[1]>;
+    onLogout: () => void;
+    theme: Theme;
+    setTheme: (t: Theme) => void;
+}) {
     const [workspaceId, setWorkspaceId] = useState(state.workspaces[0].id);
     const [boardId, setBoardId] = useState(() => boardsForWorkspace(state, workspaceId)[0].id);
     const [settingsOpen, setSettingsOpen] = useState(false);
-    const [theme, setTheme] = useState<Theme>(persistedTheme);
-
-    useEffect(() => {
-        document.documentElement.setAttribute('data-theme', theme);
-        try {
-            localStorage.setItem('jkb-theme', theme);
-        } catch {
-            // ignore
-        }
-    }, [theme]);
 
     const workspace = workspaceById(state, workspaceId);
     const workspaceBoards = useMemo(() => boardsForWorkspace(state, workspaceId), [state, workspaceId]);
@@ -50,7 +52,7 @@ export default function App() {
 
     const createWorkspace = () => {
         const name = window.prompt('Workspace name');
-        if (!name || !name.trim()) return;
+        if (!name?.trim()) return;
         dispatch({ type: 'createWorkspace', name: name.trim() });
     };
 
@@ -103,10 +105,16 @@ export default function App() {
                 </ul>
 
                 <div className="sidebar-footer">
+                    <div className="current-user">
+                        {state.users.find((u) => u.id === state.currentUserId)?.name ?? 'Unknown'}
+                    </div>
+                    <button type="button" className="settings-link" onClick={onLogout}>
+                        Switch user
+                    </button>
                     <button
                         type="button"
                         className="theme-toggle"
-                        onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
+                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                         aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
                     >
                         {theme === 'dark' ? 'Light mode' : 'Dark mode'}
@@ -124,4 +132,41 @@ export default function App() {
             )}
         </div>
     );
+}
+
+export default function App() {
+    const [state, dispatch] = useReducer(reducer, initialState);
+    const [loggedIn, setLoggedIn] = useState(() => {
+        if (typeof window === 'undefined') return true;
+        return Boolean(localStorage.getItem('jkb-current-user'));
+    });
+    const [theme, setTheme] = useState<Theme>(persistedTheme);
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+        try {
+            localStorage.setItem('jkb-theme', theme);
+        } catch {
+            // ignore
+        }
+    }, [theme]);
+
+    if (!loggedIn) {
+        return (
+            <Login
+                users={state.users}
+                onSelect={(userId) => {
+                    dispatch({ type: 'setCurrentUser', userId });
+                    setLoggedIn(true);
+                }}
+            />
+        );
+    }
+
+    const logout = () => {
+        localStorage.removeItem('jkb-current-user');
+        setLoggedIn(false);
+    };
+
+    return <MainApp state={state} dispatch={dispatch} onLogout={logout} theme={theme} setTheme={setTheme} />;
 }

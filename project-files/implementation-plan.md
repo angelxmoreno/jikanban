@@ -67,7 +67,7 @@
 - [ ] Todos view — all cards where `assigned_to = current_user`
 - [ ] Sorted by: overdue first, then by due date ascending
 - [ ] Filter by board and priority
-- [ ] Hardcoded current user in MVP (no auth yet)
+- [x] Seeded users with current-user selector (DECISION-020)
 
 ---
 
@@ -183,7 +183,7 @@
 
 ## Future Phases (Post-Oracle)
 
-- **Auth** — add Clerk, wire `current_user` throughout, remove hardcoded user seed
+- **Auth** — swap seeded-user selector for Clerk, wire `current_user` throughout
 - **BYOK** — swap Ollama base URL for cloud provider endpoint + key via Infisical
 - **Notifications** — Telegram/SMS on card assignment via notify() abstraction
 - **Richer Open Notebook sync** — event-driven transitions, real-time append log

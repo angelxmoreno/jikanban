@@ -3,7 +3,7 @@
 
 import { isoNow } from './dates';
 import {
-    currentUserId,
+    LOCAL_STORAGE_CURRENT_USER_KEY,
     boards as seedBoards,
     cards as seedCards,
     columns as seedColumns,
@@ -25,8 +25,19 @@ export interface State {
     transitions: CardTransition[];
 }
 
+function loadCurrentUserId(users: User[]): string {
+    if (typeof window === 'undefined') return users[0].id;
+    try {
+        const stored = localStorage.getItem(LOCAL_STORAGE_CURRENT_USER_KEY);
+        if (stored && users.some((u) => u.id === stored)) return stored;
+    } catch {
+        // ignore
+    }
+    return users[0].id;
+}
+
 export const initialState: State = {
-    currentUserId,
+    currentUserId: loadCurrentUserId(seedUsers),
     workspaces: seedWorkspaces,
     users: seedUsers,
     boards: seedBoards,
@@ -61,7 +72,8 @@ export type Action =
     | { type: 'addCard'; payload: NewCard }
     | { type: 'updateCard'; payload: EditCard }
     | { type: 'updateWorkspace'; workspaceId: string; settings: Partial<Workspace['settings']>; name?: string }
-    | { type: 'createWorkspace'; name: string };
+    | { type: 'createWorkspace'; name: string }
+    | { type: 'setCurrentUser'; userId: string };
 
 const uid = (): string => crypto.randomUUID();
 
@@ -194,6 +206,15 @@ export const reducer = (state: State, action: Action): State => {
                 updated_at: now,
             };
             return { ...state, workspaces: [...state.workspaces, workspace] };
+        }
+        case 'setCurrentUser': {
+            if (!state.users.some((u) => u.id === action.userId)) return state;
+            try {
+                localStorage.setItem(LOCAL_STORAGE_CURRENT_USER_KEY, action.userId);
+            } catch {
+                // ignore
+            }
+            return { ...state, currentUserId: action.userId };
         }
         default:
             return state;

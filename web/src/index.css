@@ -145,6 +145,49 @@ body {
     border-color: var(--ink-3);
 }
 
+.login {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    background: var(--paper);
+    padding: 20px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 360px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--card-bg);
+    padding: 28px;
+}
+
+.login-card .brand {
+    margin-bottom: 4px;
+}
+
+.login-card .tagline {
+    margin-bottom: 22px;
+}
+
+.login-card .btn {
+    width: 100%;
+    margin-top: 8px;
+}
+
+/* keep login button overrides after base .btn to maintain specificity order */
+.btn.login-btn {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.current-user {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-3);
+    padding: 4px 2px;
+}
+
 .nav-label {
     font-family: var(--mono);
     font-size: 10px;

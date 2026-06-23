@@ -15,7 +15,7 @@ const day = (offset: number): string => {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-export const currentUserId = 'u-angel';
+export const LOCAL_STORAGE_CURRENT_USER_KEY = 'jkb-current-user';
 
 export const workspaces: Workspace[] = [
     {

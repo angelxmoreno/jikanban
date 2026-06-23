@@ -122,7 +122,7 @@ A living document. Every significant architectural, technical, or product decisi
 
 ### [DECISION-011] No auth in MVP
 **Date:** 2026-06-22
-**Status:** Decided
+**Status:** Superseded by DECISION-020
 **Decision:** No authentication layer in the MVP. Users are seeded manually in the database. Current user is hardcoded in config.
 **Rationale:** This is a personal local tool being validated for workflow fit. Auth adds significant scaffolding before the core value is proven.
 **Alternatives considered:** Clerk from day one.
@@ -187,6 +187,16 @@ A living document. Every significant architectural, technical, or product decisi
 **Rationale:** The project is now frontend-first with dummy data (Path A in the implementation plan). The dev loop is Vite HMR + a Bun backend — Dockerizing either adds container-rebuild friction to every change with no benefit until production. Production fidelity via Dokploy matters only once the workflow is validated locally (DECISION-012). Docker-first was overhead without payoff for a single local user iterating on UX.
 **Alternatives considered:** Docker-first from day one (DECISION-004, now superseded).
 **Trade-offs:** Dev and prod environments differ — the "works on my machine" risk shifts to Phase 10. Mitigated by containerizing the same code at migration time and smoke-testing all routes there. Local dev is also one machine (Silica/dokbuntu), so drift is bounded.
+
+---
+
+### [DECISION-020] Auth via seeded users + current-user selector for MVP
+**Date:** 2026-06-22
+**Status:** Decided
+**Decision:** Add lightweight auth to the MVP using seeded users and a current-user selector in the UI. The active user is stored in app state and persisted to `localStorage`. No password validation — users are pre-seeded and selectable. The app shell gates access until a user is selected.
+**Rationale:** Per-user views (Todos, assignments, transitions, created_by) are core to the kanban workflow. Without auth, every card action appears to come from the same hardcoded user, which hides real workflow semantics and makes it impossible to validate delegation or "my tasks" views. A simple user selector is the smallest change that makes the app multi-user aware without integrating Clerk or a backend auth layer before the backend exists.
+**Alternatives considered:** Keeping the hardcoded current user (DECISION-011); adding Clerk from day one.
+**Trade-offs:** No password security, not suitable for internet exposure. For a local validation tool, this is acceptable and can be swapped for Clerk in the post-Oracle auth phase.
 
 ---
 
