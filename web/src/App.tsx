@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useReducer, useState } from 'react';
 import { BoardView } from './components/BoardView';
+import { CalendarView } from './components/CalendarView';
+import { CardForm } from './components/CardForm';
 import { Login } from './components/Login';
 import { WorkspaceSettings } from './components/WorkspaceSettings';
 import { boardsForWorkspace, initialState, reducer, workspaceById } from './store';
@@ -39,6 +41,8 @@ function MainApp({
 }) {
     const [workspaceId, setWorkspaceId] = useState(state.workspaces[0].id);
     const [boardId, setBoardId] = useState(() => boardsForWorkspace(state, workspaceId)[0].id);
+    const [view, setView] = useState<'board' | 'calendar'>('board');
+    const [editCardId, setEditCardId] = useState<string | null>(null);
     const [settingsOpen, setSettingsOpen] = useState(false);
 
     const workspace = workspaceById(state, workspaceId);
@@ -49,6 +53,8 @@ function MainApp({
         const first = boardsForWorkspace(state, id)[0];
         if (first) setBoardId(first.id);
     };
+
+    const editingCard = editCardId ? state.cards.find((c) => c.id === editCardId) : undefined;
 
     const createWorkspace = () => {
         const name = window.prompt('Workspace name');
@@ -104,6 +110,20 @@ function MainApp({
                     ))}
                 </ul>
 
+                <div className="nav-label">View</div>
+                <div className="view-seg">
+                    <button type="button" className={view === 'board' ? 'active' : ''} onClick={() => setView('board')}>
+                        Board
+                    </button>
+                    <button
+                        type="button"
+                        className={view === 'calendar' ? 'active' : ''}
+                        onClick={() => setView('calendar')}
+                    >
+                        Calendar
+                    </button>
+                </div>
+
                 <div className="sidebar-footer">
                     <div className="current-user">
                         {state.users.find((u) => u.id === state.currentUserId)?.name ?? 'Unknown'}
@@ -121,7 +141,24 @@ function MainApp({
                     </button>
                 </div>
             </aside>
-            <BoardView state={state} boardId={boardId} dispatch={dispatch} />
+            {view === 'board' ? (
+                <BoardView state={state} boardId={boardId} dispatch={dispatch} onEditCard={setEditCardId} />
+            ) : (
+                <CalendarView state={state} boardId={boardId} onEditCard={setEditCardId} />
+            )}
+            {editingCard && (
+                <CardForm
+                    open
+                    mode="edit"
+                    state={state}
+                    boardId={editingCard.board_id}
+                    card={editingCard}
+                    onClose={() => setEditCardId(null)}
+                    onSubmit={(payload) => {
+                        if ('cardId' in payload) dispatch({ type: 'updateCard', payload });
+                    }}
+                />
+            )}
             {workspace && (
                 <WorkspaceSettings
                     open={settingsOpen}

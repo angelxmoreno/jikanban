@@ -53,10 +53,10 @@
 
 **Goal:** Cards and milestones visible on a calendar, still against dummy data.
 
-- [ ] Monthly calendar view — cards plotted on due date
-- [ ] Weekly detail view — cards and milestone markers per day
-- [ ] Overdue cards highlighted
-- [ ] Click card on calendar to open card detail
+- [x] Monthly calendar view — cards plotted on due date
+- [x] Weekly detail view — cards and milestone markers per day
+- [x] Overdue cards highlighted
+- [x] Click card on calendar to open card detail
 
 ---
 
