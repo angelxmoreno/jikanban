@@ -3,6 +3,7 @@ import { BoardView } from './components/BoardView';
 import { CalendarView } from './components/CalendarView';
 import { CardForm } from './components/CardForm';
 import { Login } from './components/Login';
+import { TodosView } from './components/TodosView';
 import { WorkspaceSettings } from './components/WorkspaceSettings';
 import { boardsForWorkspace, initialState, reducer, workspaceById } from './store';
 
@@ -41,7 +42,7 @@ function MainApp({
 }) {
     const [workspaceId, setWorkspaceId] = useState(state.workspaces[0].id);
     const [boardId, setBoardId] = useState(() => boardsForWorkspace(state, workspaceId)[0].id);
-    const [view, setView] = useState<'board' | 'calendar'>('board');
+    const [view, setView] = useState<'board' | 'calendar' | 'todos'>('board');
     const [editCardId, setEditCardId] = useState<string | null>(null);
     const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -122,6 +123,9 @@ function MainApp({
                     >
                         Calendar
                     </button>
+                    <button type="button" className={view === 'todos' ? 'active' : ''} onClick={() => setView('todos')}>
+                        Todos
+                    </button>
                 </div>
 
                 <div className="sidebar-footer">
@@ -143,8 +147,10 @@ function MainApp({
             </aside>
             {view === 'board' ? (
                 <BoardView state={state} boardId={boardId} dispatch={dispatch} onEditCard={setEditCardId} />
-            ) : (
+            ) : view === 'calendar' ? (
                 <CalendarView state={state} boardId={boardId} onEditCard={setEditCardId} />
+            ) : (
+                <TodosView state={state} workspaceId={workspaceId} onEditCard={setEditCardId} />
             )}
             {editingCard && (
                 <CardForm

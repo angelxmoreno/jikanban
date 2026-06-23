@@ -64,9 +64,9 @@
 
 **Goal:** Per-user task list sorted by urgency, still against dummy data.
 
-- [ ] Todos view — all cards where `assigned_to = current_user`
-- [ ] Sorted by: overdue first, then by due date ascending
-- [ ] Filter by board and priority
+- [x] Todos view — all cards where `assigned_to = current_user`
+- [x] Sorted by: overdue first, then by due date ascending
+- [x] Filter by board and priority
 - [x] Seeded users with current-user selector (DECISION-020)
 
 ---
