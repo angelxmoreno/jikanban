@@ -60,7 +60,8 @@ export type Action =
     | { type: 'move'; cardId: string; toColumnId: string }
     | { type: 'addCard'; payload: NewCard }
     | { type: 'updateCard'; payload: EditCard }
-    | { type: 'updateWorkspace'; workspaceId: string; settings: Partial<Workspace['settings']>; name?: string };
+    | { type: 'updateWorkspace'; workspaceId: string; settings: Partial<Workspace['settings']>; name?: string }
+    | { type: 'createWorkspace'; name: string };
 
 const uid = (): string => crypto.randomUUID();
 
@@ -174,6 +175,25 @@ export const reducer = (state: State, action: Action): State => {
                         : w
                 ),
             };
+        }
+        case 'createWorkspace': {
+            const now = isoNow();
+            const id = uid();
+            const slug =
+                action.name
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-|-$/g, '') || `ws-${id.slice(0, 8)}`;
+            const workspace: Workspace = {
+                id,
+                name: action.name,
+                slug,
+                created_by: state.currentUserId,
+                settings: {},
+                created_at: now,
+                updated_at: now,
+            };
+            return { ...state, workspaces: [...state.workspaces, workspace] };
         }
         default:
             return state;

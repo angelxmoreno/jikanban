@@ -48,6 +48,12 @@ export default function App() {
         if (first) setBoardId(first.id);
     };
 
+    const createWorkspace = () => {
+        const name = window.prompt('Workspace name');
+        if (!name || !name.trim()) return;
+        dispatch({ type: 'createWorkspace', name: name.trim() });
+    };
+
     const cardCount = (bid: string): number => state.cards.filter((c) => c.board_id === bid).length;
 
     return (
@@ -76,6 +82,9 @@ export default function App() {
                         Workspace settings
                     </button>
                 )}
+                <button type="button" className="settings-link" onClick={createWorkspace}>
+                    + New workspace
+                </button>
 
                 <div className="nav-label">Boards</div>
                 <ul className="board-nav">
